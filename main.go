@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"sort"
 )
 
 func main() {
@@ -30,6 +32,16 @@ func login(writer http.ResponseWriter, request *http.Request) {
 		SameSite:   http.SameSiteNoneMode,
 	}
 	http.SetCookie(writer, JSESSIONID)
+
+	writer.Write([]byte("\n\n----- Headers Received -----\n"))
+	var keys []string
+	for header := range request.Header {
+		keys = append(keys, header)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		writer.Write([]byte(fmt.Sprintf("%s : %v \n", key, request.Header[key])))
+	}
 }
 
 func test(writer http.ResponseWriter, request *http.Request) {
